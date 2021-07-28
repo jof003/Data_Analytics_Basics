@@ -1,1 +1,1 @@
-# Data_Analytics_Basics
+# Practice in performing the basics of data analytics. Codes have been adapted from the RStudio Cloud Primers tutorials (https://rstudio.cloud/learn/primers) and the Google Data Analytics Professional Certificate (https://www.coursera.org/professional-certificates/google-data-analytics).

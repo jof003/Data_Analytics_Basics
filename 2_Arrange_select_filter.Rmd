@@ -1,0 +1,120 @@
+---
+title: "2_Arrange_Select_Filter"
+author: "Joanne Fil"
+date: "7/22/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Practice using 'arrange', 'select' and 'filter' to manipulate the dataset
+
+### Install packages and view the data
+
+```{r babynames}
+library(babynames)
+library(tibble)
+library(tidyverse)
+head(babynames)
+```
+
+#### How to select various columns:
+### Select columns except n
+
+```{r}
+select(babynames, -n)
+```
+
+### Select between certain columns (inclusive)
+
+```{r}
+select(babynames, year:name)
+```
+
+### Select columns that contains a specific string
+
+```{r}
+select(babynames, contains("se"))
+```
+
+### Select columns that end with a specific string
+
+```{r}
+select(babynames, ends_with("r"))
+```
+
+### How to filter names:
+
+```{r}
+filter(babynames, name == "Elizabeth")
+```
+
+### Filter name and proportion
+
+```{r}
+filter(babynames, name == "Elizabeth" & prop > 0.001)
+```
+
+### Filter name or proportion
+
+```{r}
+filter(babynames, name == "Elizabeth" | prop > 0.001)
+```
+
+### Filter year
+
+```{r}
+filter(babynames, year == 1880 | year == 1900 | year == 1992)
+filter(babynames, year %in% c(1880, 1900, 1992))
+```
+
+### Arrange order
+
+```{r}
+arrange(babynames, name)
+arrange(babynames, year, desc(prop))
+arrange(babynames,desc(prop))
+```
+
+### Filter, select, and arrange
+
+```{r}
+boys_2017 <- filter(babynames, year == 2017, sex == "M")
+head(boys_2017)
+boys_2017 <- select(boys_2017, name, n)
+head(boys_2017)
+boys_2017 <- arrange(boys_2017, desc(n))
+head(boys_2017)
+```
+
+### Faster way to run codes is by using piper operator
+
+```{r}
+babynames %>% 
+  filter(name == "Elizabeth", sex == "F") %>%
+  summarize(total = sum(n), max = max(n), min = min(n), mean = mean(n))
+```
+
+### Practice: filter specific name and plot it
+
+```{r}
+Eliz <- filter(babynames, name == "Elizabeth") 
+
+ggplot(data = Eliz) +
+  geom_line(mapping = aes(x = year, y = n))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+

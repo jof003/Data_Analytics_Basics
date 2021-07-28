@@ -1,0 +1,188 @@
+---
+title: "6_Scatterplot"
+author: "Joanne Fil"
+date: "7/27/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Practice using scatterplots
+
+### Scatterplot
+
+```{r}
+library(ggplot2)
+library(dplyr)
+mpg %>% 
+  group_by(class) %>% 
+  summarise(mean_cty = mean(cty), mean_hwy = mean(hwy)) %>% 
+  ggplot() +
+  geom_point(mapping = aes(x = mean_cty, y = mean_hwy))
+```
+
+### Scatterplot with words, either geom_text or geom_label
+
+```{r}
+mpg %>% 
+  group_by(class) %>% 
+  summarise(mean_cty = mean(cty), mean_hwy = mean(hwy)) %>% 
+  ggplot() +
+  geom_text(mapping = aes(x = mean_cty, y = mean_hwy, label = class))
+
+mpg %>% 
+  group_by(class) %>% 
+  summarise(mean_cty = mean(cty), mean_hwy = mean(hwy)) %>% 
+  ggplot() +
+  geom_label(mapping = aes(x = mean_cty, y = mean_hwy, label = class))
+```
+
+### Use 'model' to fit linear (lm) or generalized liner (glm) models
+
+```{r}
+mpg %>% 
+  group_by(class) %>% 
+  summarise(mean_cty = mean(cty), mean_hwy = mean(hwy)) %>% 
+  ggplot() +
+  geom_smooth(mapping = aes(x = mean_cty, y = mean_hwy), method = lm)
+```
+
+### Scatterplot with raw data and a trend line
+
+```{r}
+mpg %>% 
+  group_by(class) %>% 
+  summarise(mean_cty = mean(cty), mean_hwy = mean(hwy)) %>% 
+  ggplot() +
+  geom_point(mapping = aes(x = mean_cty, y = mean_hwy)) +
+  geom_smooth(mapping = aes(x = mean_cty, y = mean_hwy), method = lm) 
+```
+
+### Arrange labels within a plot
+
+```{r}
+library("ggrepel")
+mpg %>% 
+  group_by(class) %>% 
+  summarise(mean_cty = mean(cty), mean_hwy = mean(hwy)) %>% 
+  ggplot() +
+  geom_point(mapping = aes(x = mean_cty, y = mean_hwy)) +
+  geom_smooth(mapping = aes(x = mean_cty, y = mean_hwy), method = lm) +
+  geom_label_repel(mapping = aes(x = mean_cty, y = mean_hwy, label = class))
+```
+
+### More efficient way to write above code
+
+```{r}
+mpg %>% 
+  group_by(class) %>% 
+  summarise(mean_cty = mean(cty), mean_hwy = mean(hwy)) %>% 
+  ggplot(mapping = aes(x = mean_cty, y = mean_hwy)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  geom_label_repel(mapping = aes(label = class))
+```
+
+### Dots and lines
+
+```{r}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point() +
+  geom_smooth(mapping = aes(color = class), se = FALSE)
+
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point(mapping = aes(color = class)) +
+  geom_smooth()
+```
+
+### Highlight certain points in color
+
+```{r}
+mpg2 <- filter(mpg, class == "2seater")
+
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point() +
+  geom_point(data = mpg2, color = "red", size = 2)
+```
+
+### Highlight certain points using labels
+
+```{r}
+mpg3 <- filter(mpg, hwy > 40)
+
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point() +
+  geom_label_repel(data = mpg3, mapping = aes(label = class))
+```
+
+### Can pull up last plot and add onto it
+
+```{r}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point()
+
+last_plot() +
+  geom_smooth()
+
+last_plot() +
+  geom_smooth(method = lm, color = "purple")
+```
+
+### Display one dimensional marginal distribution of each variable as collection of tickmarks
+
+```{r}
+ggplot(data = faithful, mapping = aes(x = waiting, y = eruptions)) +
+  geom_point() +
+  geom_rug()
+```
+
+### Jitter to add small amount of noise - inspect patterns in heavily overlapping data
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = class, y = hwy))
+
+ggplot(data = mpg) +
+  geom_jitter(mapping = aes(x = class, y = hwy))
+```
+
+### Boxplot and jitter
+
+```{r}
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
+  geom_boxplot(outlier.alpha = 0) +
+  geom_jitter(width = 0)
+
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
+  geom_boxplot(outlier.alpha = 0) +
+  geom_jitter(width = 0) +
+  coord_flip()
+```
+
+### Can flip to use polar coordinates
+
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, fill = cut), width = 1) 
+
+last_plot() +
+  coord_polar()
+```
+
+### Log-log plot
+
+```{r}
+ggplot(data = diamonds) +
+  geom_point(mapping = aes(x = log(carat), y = log(price))) 
+```
+
+### Log axis
+
+```{r}
+ggplot(data = diamonds) +
+  geom_point(mapping = aes(x = carat, y = price)) +
+  coord_trans(x = "log", y = "log")
+```
+

@@ -1,0 +1,115 @@
+---
+title: "5_Boxplot_Counts_Heatmap"
+author: "Joanne Fil"
+date: "7/27/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Practce using boxplots, counts, and heatmaps
+
+### Boxplot
+
+```{r}
+library(ggplot2)
+library(dplyr)
+ggplot(data = mpg) +
+  geom_boxplot(mapping = aes(x = class, y = hwy))
+```
+
+### Boxplot with diamond data - many outliers
+
+```{r}
+ggplot(data = diamonds) +
+  geom_boxplot(mapping = aes(x = cut, y = price))
+```
+
+### Can change how outliers look
+
+```{r}
+ggplot(data = diamonds) +
+  geom_boxplot(mapping = aes(x = cut, y = price), outlier.shape = 24, 
+               outlier.fill = "white", outlier.stroke = 0.25)
+```
+
+### Can make outliers disappear
+
+```{r}
+ggplot(data = diamonds) +
+  geom_boxplot(mapping = aes(x = cut, y = price), outlier.alpha = 0)
+```
+
+### Can split by group with vertical boxplots
+
+```{r}
+ggplot(data = diamonds) +
+  geom_boxplot(mapping = aes(x = carat, y = price, 
+                             group = cut_width(carat, width = 0.25)))
+```
+
+### Can split by group with horizontal boxplots
+
+```{r}
+ggplot(data = mpg) +
+  geom_boxplot(mapping = aes(x = class, y = hwy)) + 
+  coord_flip()
+```
+
+### Distribute data with dots
+
+```{r}
+ggplot(data = mpg) +
+  geom_dotplot(mapping = aes(x = class, y = hwy), binaxis = "y", 
+               dotsize = 0.5, binwidth = 1)
+```
+
+```{r}
+ggplot(data = mpg) +
+  geom_dotplot(mapping = aes(x = class, y = hwy), binaxis = "y", 
+               dotsize = 0.5, binwidth = 1, stackdir = 'center')
+```
+
+### Violin plot to use densities to draw a smoothed version of the dotplot
+
+```{r}
+ggplot(data = mpg) +
+  geom_violin(mapping = aes(x = class, y = hwy))
+```
+
+### Violin plot with 25th, 50th, and 75th percentile
+
+```{r}
+ggplot(data = mpg) +
+  geom_violin(mapping = aes(x = class, y = hwy),
+              draw_quantiles = c(0.25, 0.5, 0.75))
+```
+
+### Interaction of continuous variable and two categorical variables
+
+```{r}
+ggplot(data = diamonds) +
+  geom_count(mapping = aes(x = cut, y = clarity))
+
+```
+
+### Count - compute count values
+
+```{r}
+diamonds %>% 
+  count(cut, clarity)
+```
+
+### Heatmap
+
+```{r}
+diamonds %>% 
+  count(color, cut) %>% 
+  ggplot(mapping = aes(x = color, y = cut)) +
+  geom_tile(mapping = aes(fill = n))
+```
+
+
+

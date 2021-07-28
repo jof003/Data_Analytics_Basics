@@ -1,0 +1,141 @@
+---
+title: "1_Visualization_Basics"
+author: "Joanne Fil"
+date: "7/22/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Examples of visualization basics
+### Question: Do cars with bigger engines use more fuel than cars with smaller engines?
+
+#### Load the library with car data and view the data. Usually you can use View(mpg) to view the dataset but for Rmarkdown purposes we'll just look at the first 10 rows. 
+
+```{r view}
+library(ggplot2)
+head(mpg)
+```
+
+#### Create a scatter plot comparing the car's engine size (displ) to the fuel efficiency (hwy)
+
+```{r scatter}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+```
+
+### Answer: There is negative relationship between engine size and fuel efficiency so cars with big engines use more fuel.
+
+### Question: From the previous plot we saw outliers that some cars with large engine sizes have higher fuel efficiency, why is this?
+
+#### Look at class (compact, midsize, SUV) using color
+
+```{r class}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy,
+                           color = class))
+```
+
+### Answer: There are outliers from two-seater cars.
+
+# More practice with visualizing the same data in different ways
+#### Look at the class using different colors
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy,
+                           color = class))
+```
+
+#### Look at the class (compact, midsize, SUV) using size of data point (not the greatest way to visualize this data)
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy,
+                           size = class))
+```
+
+#### Look at the class (compact, midsize, SUV) using alpha (not the greatest way to visualize this data)
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy,
+                           alpha = class))
+```
+
+#### Look at the class (compact, midsize, SUV) using shape (shape palette can deal with only maximum of 6 shapes so SUV is missing -- not a great way to visualize this data)
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy,
+                           shape = class))
+```
+
+#### Look at the class (compact, midsize, SUV) using shape, size, and color -- not the greatest way to visualize the data
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy,
+                           color = class, shape = class, size = class))
+```
+
+### Question: How do aesthetics behave for continuous variables like city?
+
+#### What happens if you map cty to color?
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy,
+                           color = cty))
+```
+
+### Answer: Gradient of hues
+
+#### What happens if you map cty to size?
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy,
+                           size = cty))
+```
+
+### Answer: Gradient of sizes
+
+### What happens if you map cty to shape?
+
+### Answer: Error, cannot map to shape
+
+### Question: What if you want to change color of all points?
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy),
+             color = "blue")
+```
+
+### Answer: Map color outside 'aes'
+
+### Question: what if want a smooth graph?
+
+```{r}
+ggplot(data = mpg) + 
+  geom_smooth(mapping = aes(x = displ, y = hwy))
+```
+
+### Answer: Use geom_smooth
+
+
+
+
+
+
+
+
+
+
+
+
+
+

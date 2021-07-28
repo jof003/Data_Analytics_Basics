@@ -1,0 +1,172 @@
+---
+title: "12_Join_Datasets"
+author: "Joanne Fil"
+date: "7/27/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Practice joining datasets in different ways
+
+### Compare average flight delay time by airline
+
+```{r}
+library("nycflights13")
+library(dplyr)
+library(tidyr)
+
+flights
+
+flights %>% 
+  drop_na(arr_delay) %>% 
+  group_by(carrier) %>% 
+  summarise(avg_delay = mean(arr_delay)) %>% 
+  arrange(desc(avg_delay))
+```
+
+### Want to join this outcome with the airlines dataset to know the airline name and not just the code 
+
+```{r}
+flights %>% 
+  drop_na(arr_delay) %>% 
+  group_by(carrier) %>% 
+  summarise(avg_delay = mean(arr_delay)) %>% 
+  arrange(desc(avg_delay)) %>% 
+  left_join(airlines, by = "carrier") %>% 
+  select(name, avg_delay)
+```
+
+### See which destinations have largest average arrival delays
+
+```{r}
+flights %>% 
+  drop_na(arr_delay) %>%
+  group_by(dest) %>%
+  summarise(avg_delay = mean(arr_delay)) %>%
+  arrange(desc(avg_delay))
+```
+
+### Want to combine datasets but they have different column names (airports uses faa instead of dest)
+
+```{r}
+flights %>% 
+  drop_na(arr_delay) %>%
+  group_by(dest) %>%
+  summarise(avg_delay = mean(arr_delay)) %>%
+  arrange(desc(avg_delay)) %>% 
+  left_join(airports, by = c("dest" = "faa")) %>% 
+  select(name, avg_delay)
+```
+
+### Semi-join returns every row of first data set that matches second dataset but does not add anything from the second dataset
+
+```{r}
+band <- read.csv("band.csv")
+instrument <- read.csv("instrument.csv")
+
+band %>% semi_join(instrument, by = "name")
+```
+
+### Anti-join does opposite, returns rows in first dataset that don't match in the second data set
+
+```{r}
+band %>% anti_join(instrument, by = "name")
+```
+
+### Distinct gives you values that are unique in a column
+
+```{r}
+instrument %>% distinct(plays)
+```
+
+### How many airports does New York City connect to?
+
+```{r}
+flights %>% 
+  distinct(dest)
+
+flights %>% 
+  distinct(dest) %>% 
+  left_join(airports, by = c("dest" = "faa")) %>% 
+  select(name)
+```
+
+### Some codes did not have a match with the airports, so we use anti_join to figure out which ones they are
+
+```{r}
+flights %>%
+  distinct(dest) %>% 
+  anti_join(airports, by = c("dest" = "faa"))
+```
+
+### Let's find all of the codes that do match an airport
+
+```{r}
+flights %>% 
+  semi_join(airports, by = c("dest" = "faa")) 
+```
+
+### What if want flights that depart in January on JetBlue or depoart February on Southwest?
+
+```{r}
+criteria <- tribble(
+  ~month, ~carrier,
+  1,     "B6", # B6 = JetBlue
+  2,     "WN"  # WN = Southwest
+)
+
+criteria
+
+flights %>% 
+  semi_join(criteria, by = c("month", "carrier"))
+```
+
+### If data contains same observations in same order, you can combine them with 'bind_cols'
+
+```{r}
+beatles1 <- read.csv("beatles1.csv")
+beatles2 <- read.csv("beatles2.csv")
+
+beatles1 %>% bind_cols(beatles2)
+```
+
+### Or with 'bind_rows'
+
+```{r}
+band2 <- read.csv("band2.csv")
+
+band %>% bind_rows(band2)
+```
+
+#When combining rows, it's useful to add new column showing where each row came from 
+
+```{r}
+bands <- list(df1 = band, 
+              df2 = band2)
+
+bands %>% bind_rows(.id = "origin")
+```
+
+### Union returns every row in data sets but removes duplicates
+
+```{r}
+band %>% union(band2)
+```
+
+### Intersect returns that only appear in both (also removes duplicates)
+
+```{r}
+band %>% intersect(band2)
+```
+
+### Setdiff returns all of the rows that appear in the first data set but not the second.
+
+```{r}
+band %>% setdiff(band2)
+
+band2 %>% setdiff(band)
+```
+

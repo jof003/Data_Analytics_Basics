@@ -1,0 +1,164 @@
+---
+title: "7_Line_Graph"
+author: "Joanne Fil"
+date: "7/27/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Practice using line graphs
+
+### Line graph 
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+ggplot(economics) +
+  geom_line(mapping = aes(x = date, y = unemploy))
+```
+
+### Line graph but fills area under
+
+```{r}
+ggplot(economics) +
+  geom_area(mapping = aes(x = date, y = unemploy))
+```
+
+### Line graph but fills area under with color
+
+```{r}
+ggplot(economics) +
+  geom_area(mapping = aes(x = date, y = unemploy), fill = "blue")
+```
+
+```{r}
+library("gapminder")
+
+asia <- read.csv("asia.csv", header = TRUE)
+```
+
+### Whipsaw
+
+```{r}
+ggplot(asia) +
+  geom_line(mapping = aes(x = year, y = gdpPercap))
+
+```
+
+### Scatterplot lines
+
+```{r}
+ggplot(asia) +
+  geom_point(mapping = aes(x = year, y = gdpPercap))
+```
+
+### Separate by line
+
+```{r}
+ggplot(asia) +
+  geom_line(mapping = aes(x = year, y = gdpPercap, group = country))
+```
+
+### Separate by line and color 
+
+```{r}
+ggplot(asia) +
+  geom_line(mapping = aes(x = year, y = gdpPercap, color = country))
+```
+
+### Separate by different line types and color 
+
+```{r}
+ggplot(asia) +
+  geom_line(mapping = aes(x = year, y = lifeExp, color = country, linetype = country))
+
+```
+
+### Overlap of filled lines 
+
+```{r}
+ggplot(asia) +
+  geom_area(mapping = aes(x = year, y = lifeExp, fill = country), position = "identity", alpha = 0.3)
+```
+
+### Longitude and Latitude data
+
+```{r}
+library(maps)
+usa <- map_data("usa")
+```
+
+### Shows map outline
+
+```{r}
+ggplot(usa) +
+  geom_path(mapping = aes(x = long, y = lat))
+```
+
+### Shows colored map
+
+```{r}
+ggplot(usa) +
+  geom_polygon(mapping = aes(x = long, y = lat))
+
+```
+
+### Get subset of region
+
+```{r}
+fl <- map_data("state", region = "florida")
+ggplot(fl) +
+  geom_polygon(mapping = aes(x = long, y = lat))
+```
+
+### This one gives us strange image because contains multiple polygons and is connecting them in weird ways
+
+```{r}
+us <- map_data("state")
+ggplot(us) +
+  geom_polygon(mapping = aes(x = long, y = lat))
+```
+
+### This fixes it by grouping them
+
+```{r}
+ggplot(us) +
+  geom_polygon(mapping = aes(x = long, y = lat, group = group))
+```
+
+### Chloropleth map
+
+```{r}
+USArrests2 <- USArrests %>% 
+  rownames_to_column("region") %>% 
+  mutate(region = tolower(region))
+
+USArrests2
+
+ggplot(USArrests2) +
+  geom_map(aes(map_id = region, fill = UrbanPop), map = us) +
+  expand_limits(x = us$long, y = us$lat)
+```
+
+### Fix map distortion by using coord_map()
+
+```{r}
+ggplot(USArrests2) +
+  geom_map(aes(map_id = region, fill = UrbanPop), map = us) +
+  expand_limits(x = us$long, y = us$lat) +
+  coord_map()
+```
+
+### Can change to different projection instead of Mercator default
+
+```{r}
+ggplot(USArrests2) +
+  geom_map(aes(map_id = region, fill = UrbanPop), map = us) +
+  expand_limits(x = us$long, y = us$lat) +
+  coord_map(projection = "sinusoidal")
+```
+

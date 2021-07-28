@@ -1,0 +1,105 @@
+---
+title: "10_Tidy_Data"
+author: "Joanne Fil"
+date: "7/27/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Practice tidying data
+
+### Find mean
+
+```{r}
+library(tidyverse)
+library(babynames)
+mean(table1$cases)
+```
+
+### Compute ratios
+
+```{r}
+table1$cases / table1$population
+```
+
+### Use gather to convert wide data to long data
+
+```{r}
+table4a
+
+table4a %>% gather(key = "year", value = "cases", 2, 3)
+```
+
+### Can convert using a variety of methods
+
+```{r}
+table4a %>% gather(key = "year", value = "cases", `1999`, `2000`)
+table4a %>% gather(key = "year", value = "cases", -country)
+table4a %>% gather(key = "year", value = "cases", one_of(c("1999", "2000")))
+```
+
+### Need to ask R to convert new column to appropriate data type by adding convert
+
+```{r}
+table4b %>% gather(key = "year", value = "population", -country, convert = TRUE)
+```
+
+### Practice using gather on larger dataset
+
+```{r}
+cases2 <- read.csv("/Users/ashafil/Documents/R/cases2.csv")
+
+cases2
+
+cases2 %>% gather(key = "year", value = "cases", 4, 5, 6)
+```
+
+### Can use 'spread' and change what columns used askey and what column used as values
+
+```{r}
+pollution <-read.csv("/Users/ashafil/Documents/R/pollution.csv")
+
+pollution
+
+pollution %>% spread(key = size, value = amount)
+
+table2
+
+table2 %>% spread(key = type, value = count)
+```
+
+### Note: gather uses quotations around the  key and value arguments whereas spread does not, gather refers to columns that do not exist while spread points to columns that do exist
+
+### Review making a plot to compare boy and girl babynames over time
+
+```{r}
+babynames %>%
+  group_by(year, sex) %>% 
+  summarise(total = sum(n)) %>% 
+  ggplot() +
+  geom_line(aes(year, total, color = sex))
+```
+
+### Better way to look at it is through using a ratio
+
+```{r}
+babynames %>%
+  group_by(year, sex) %>% 
+  summarise(total = sum(n))
+```
+
+### But easier to calculate if reshape data
+
+```{r}
+babynames %>%
+  group_by(year, sex) %>% 
+  summarise(total = sum(n)) %>%
+  spread(sex, total) %>%
+  mutate(ratio = M / F) %>%
+  ggplot(aes(year, ratio)) + 
+  geom_line()
+```
+

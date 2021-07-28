@@ -1,0 +1,78 @@
+---
+title: "11_Separate_Unite_Columns"
+author: "Joanne Fil"
+date: "7/27/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Practice separating and uniting columns
+### Import data
+
+```{r}
+library(dplyr)
+library(tidyverse)
+hurricanes <- read.csv("hurricanes.csv")
+
+hurricanes
+```
+
+### What if want to separate the elements of the date?
+
+```{r}
+hurricanes %>% 
+  separate(col = date, into = c("year","month","day"), sep = "-")
+```
+
+### Can further separate by location defined by integers
+
+```{r}
+hurricanes %>% 
+  separate(col = date, into = c("year","month","day")) %>% 
+  separate(col = year, into = c("century", "year"), sep = 2)
+```
+
+### Also can separate using 'convert = TRUE'
+
+```{r}
+hurricanes %>% 
+  separate(col = date, into = c("year","month","day"), convert = TRUE)
+```
+
+### Can retain original column and have new column
+
+```{r}
+hurricanes %>% 
+  separate(col = date, into = c("year","month","day"), convert = TRUE, remove = FALSE)
+```
+
+### Can put columns together by using 'unite'
+
+```{r}
+hurricanes %>%
+  separate(date, c("year", "month", "day"), sep = "-") %>%
+  unite(col = "date", month, day, year, sep = ":")
+
+hurricanes %>%
+  separate(date, c("year", "month", "day"), sep = "-") %>%
+  unite(col = "date", month, day, year, sep = "/")
+```
+
+### Can filter if just want data from the 19th century
+
+```{r}
+hurricanes %>%
+  separate(col = date, c("century", "rest"), sep = 2) %>%
+  filter(century == 19) %>% 
+  unite(col = "date", century, rest, sep = "")
+```
+
+### When working in long format, if there is N/A, you may be able to remove the whole column since it does not have any data in it
+
+```{r}
+data %>% drop_na(column1, column2)
+```
+

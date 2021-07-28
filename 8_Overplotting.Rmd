@@ -1,0 +1,55 @@
+---
+title: "8_Overplotting"
+author: "Joanne Fil"
+date: "7/27/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Practice working with overplotted data
+
+### Overplotting - when points are hidden behind other points
+###Use alpha to make transparent
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy), alpha = 0.25)
+```
+
+### Can also use jitter 
+
+```{r}
+ggplot(data = mpg) +
+  geom_jitter(mapping = aes(x = displ, y = hwy))
+```
+
+### Best way to deal with overplotting is to visualize summary of data
+### Boxplot
+
+```{r}
+ggplot(data = diamonds) +
+  geom_boxplot(mapping = aes(x = carat, y = price, group = cut_width(carat, width = 0.2)))
+```
+
+### Three dimensional histogram
+
+```{r}
+ggplot(data = diamonds) +
+  geom_bin2d(mapping = aes(x = carat, y = price), bins = c(40, 50))
+
+ggplot(data = diamonds) +
+  geom_hex(mapping = aes(x = carat, y = price))
+```
+
+### Summarize a two dimensional continuous relationship
+
+```{r}
+ggplot(data = diamonds, mapping = aes(x = carat, y = price)) +
+  geom_point(alpha = 0.1) +
+  geom_density2d()
+
+```
+

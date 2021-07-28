@@ -1,0 +1,274 @@
+---
+title: "Data_Analytics_Practice"
+author: "Joanne Fil"
+date: "7/27/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Looking at different dates and times
+
+```{r}
+library(lubridate)
+library(tidyverse)
+today()
+now()
+ymd("2021-01-20")  
+mdy("January 20th, 2021")
+dmy("20-Jan-2021")
+```
+
+### Practice calculations
+
+```{r}
+quarter_1_sales <- 35657.98
+quarter_2_sales <- 43810.55
+midyear_sales <- quarter_1_sales + quarter_2_sales
+yearend_sales <- midyear_sales * 2
+```
+
+### Looking at Diamond data
+
+```{r}
+library(ggplot2)
+library(dplyr)
+head(diamonds) #first several rows of data
+str(diamonds) #summary of each column
+glimpse(diamonds)
+colnames(diamonds) #list of column names from dataset
+rename(diamonds, carat_new = carat, cut_new = cut) # change catat to carat_new
+summarize(diamonds, mean_carat = mean(carat)) #summary statistics
+ggplot(data = diamonds, aes(x = carat, y = price)) + geom_point() #visualization
+ggplot(data = diamonds, aes(x = carat, y = price, color = cut)) + geom_point() + facet_wrap(~cut) # facet_wrap creates different plots for each component
+```
+
+### Practicing with pipes
+
+```{r}
+head(ToothGrowth)
+library(dplyr)
+filtered_tg <- filter(ToothGrowth, dose == 0.5) #filtered to dose 0.5
+head(filtered_tg)
+
+arrange(filtered_tg,len) #sort by len (length of tooth) in ascending order
+arrange(filter(ToothGrowth,dose == 0.5),len) #nested function
+
+filtered_toothgrowth <- ToothGrowth %>% 
+  filter(dose == 0.5) %>% 
+  arrange(len)
+head(filtered_toothgrowth) # pipe shortcut is command, shift, m
+
+filtered_toothgrowth <- ToothGrowth %>% 
+  filter(dose == 0.5) %>% 
+  group_by(supp) %>% 
+  summarize(mean_len = mean(len,na.rm = T),.group = 'drop')
+head(filtered_toothgrowth)
+
+```
+
+### Mutate
+
+```{r}
+head(diamonds)
+mutate(diamonds, carat_2 = carat *100)
+```
+
+### Tibble
+
+```{r}
+as_tibble(diamonds)
+```
+
+### More practice using penguins
+
+```{r}
+library("here")
+library("skimr")
+library("janitor")
+library(palmerpenguins)
+skim_without_charts(penguins)
+glimpse(penguins)
+head(penguins)
+
+penguins %>% 
+  select(species)
+
+penguins %>% 
+  select(-species) #column without species column
+
+penguins %>% 
+  rename(island_new = island)
+
+rename_with(penguins, toupper) #nmakes columns all uppercase
+rename_with(penguins, tolower) 
+
+clean_names(penguins) #ensures only character, numbers, and underscores in name
+
+```
+
+### Arrange, group by, and filter
+
+```{r}
+penguins %>% 
+  arrange(bill_length_mm)
+
+penguins2 <- penguins %>% 
+  arrange(bill_length_mm)
+
+head(penguins2)
+
+penguins %>% group_by(island) %>% 
+  drop_na %>% 
+  summarize(mean_bill_length_mm = mean(bill_length_mm))
+
+penguins %>% group_by(island) %>% 
+  drop_na %>% 
+  summarize(max_bill_length_mm = max(bill_length_mm))
+
+penguins %>% group_by(species, island) %>% 
+  drop_na() %>% 
+  summarize(max_bl = max(bill_length_mm), mean_bl = mean(bill_length_mm))
+
+penguins %>% 
+  filter(species == "Adelie")
+```
+
+### Manually create a data frame
+
+```{r}
+id <- c(1:10)
+name <- c("John Mendes", "Rob Stewart", "Rachel Abrahamson", "Christy Hickman", "Johnson Harper",
+          "Candace Miller", "Carlson Landy", "Pansy Jordan", "Darius Berry", "Claudia Garcia")
+job_title <- c("Professional", "Programmer", "Management", "Clerical", "Developer", "Programmer",
+               "Management", "Clerical", "Developer", "Programmer")
+employee <- data.frame(id, name, job_title)
+
+print(employee)
+
+employee2 <- separate(employee, name, into = c('first_name', 'last_name'), sep = ' ')
+
+unite(employee2, 'name', first_name, last_name, sep = ' ')
+
+head(penguins)
+
+penguins %>% 
+  mutate(body_mass_kg = body_mass_g/1000, flipper_length_m = flipper_length_mm/1000)
+
+as_tibble(penguins)
+```
+
+#### Anscombe's Quartet
+
+```{r}
+library("Tmisc")
+data(quartet)
+view(quartet)
+
+quartet %>% 
+  group_by(set) %>% 
+  summarize(mean(x), sd(x), mean(y), sd(y), cor(x,y))
+
+library('datasauRus')
+
+ggplot(datasaurus_dozen,aes(x=x,y=y,colour=dataset)) +geom_point() + theme_void()
+```
+
+### Checking biased data
+
+```{r}
+library('SimDesign')
+
+actual_temp <- c(68.3, 70, 72.4, 71, 67, 70)
+predicted_temp <- c(67.9, 69, 71.5, 70, 67, 69)
+
+bias(actual_temp, predicted_temp) ## outcome 0.71 which is very high, biased towards lower temps so not as accurate as could be
+```
+
+### Plotting
+
+```{r}
+ggplot(data = penguins) + geom_point(mapping=aes(x=flipper_length_mm,y=body_mass_g))
+
+ggplot(data = penguins) + geom_point(mapping=aes(x=bill_length_mm,y=bill_depth_mm))
+
+ggplot(data = penguins) + geom_point(mapping=aes(x=flipper_length_mm,y=body_mass_g, color = species))
+
+ggplot(data = penguins) + geom_point(mapping=aes(x=flipper_length_mm,y=body_mass_g, shape = species, color = species, size = species))
+
+ggplot(data = penguins) + geom_point(mapping=aes(x=flipper_length_mm,y=body_mass_g, alpha=species))
+
+ggplot(data = penguins) + geom_point(mapping=aes(x=flipper_length_mm,y=body_mass_g), color = "purple")
+```
+
+### Other types of geom
+
+```{r}
+ggplot(data = penguins) + geom_smooth(mapping=aes(x=flipper_length_mm,y=body_mass_g)) + geom_point(mapping=aes(x=flipper_length_mm,y=body_mass_g))
+
+ggplot(data = penguins) + geom_smooth(mapping=aes(x=flipper_length_mm,y=body_mass_g, linetype=species))                                     
+
+ggplot(data = penguins) + geom_jitter(mapping=aes(x=flipper_length_mm,y=body_mass_g))
+```
+
+### Bar chart
+
+```{r}
+ggplot(data=diamonds)+geom_bar(mapping=aes(x=cut))
+
+ggplot(data=diamonds)+geom_bar(mapping=aes(x=cut, color= cut))
+
+ggplot(data=diamonds)+geom_bar(mapping=aes(x=cut, fill=cut))
+
+ggplot(data=diamonds)+geom_bar(mapping=aes(x=cut, fill=clarity))
+```
+
+### Facets
+
+```{r}
+ggplot(data = penguins,aes(x=flipper_length_mm,y=body_mass_g, color=species))+
+  geom_point(aes(color=species))+facet_wrap(~species)
+
+ggplot(data=diamonds)+geom_bar(mapping=aes(x=color,fill=cut))+facet_wrap(~cut)
+
+ggplot(data = penguins)+
+  geom_point(mapping=aes(x=flipper_length_mm,y=body_mass_g, color=species))+facet_grid(sex~species)
+
+ggplot(data = penguins)+
+  geom_point(mapping=aes(x=flipper_length_mm,y=body_mass_g, color=species))+facet_grid(~sex)
+```
+
+### Title
+
+```{r}
+ggplot(data = penguins) + geom_point(mapping=aes(x=flipper_length_mm,y=body_mass_g, color = species))+
+  labs(title="Palmer Penguins: Body Mass vs. Flipper Length")
+
+ggplot(data = penguins) + geom_point(mapping=aes(x=flipper_length_mm,y=body_mass_g, color = species))+
+  labs(title="Palmer Penguins: Body Mass vs. Flipper Length", subtitle="Sample of Three Penguin Species")
+
+ggplot(data = penguins) + geom_point(mapping=aes(x=flipper_length_mm,y=body_mass_g, color = species))+
+  labs(title="Palmer Penguins: Body Mass vs. Flipper Length", subtitle="Sample of Three Penguin Species", caption= "Data collected by Dr. Kristen Gorman")
+
+ggplot(data = penguins) + geom_point(mapping=aes(x=flipper_length_mm,y=body_mass_g, color = species))+
+  labs(title="Palmer Penguins: Body Mass vs. Flipper Length", subtitle="Sample of Three Penguin Species", caption= "Data collected by Dr. Kristen Gorman")+
+  annotate("text", x=220, y=3500, label="The Gnetoos are the largest")
+
+ggplot(data = penguins) + geom_point(mapping=aes(x=flipper_length_mm,y=body_mass_g, color = species))+
+  labs(title="Palmer Penguins: Body Mass vs. Flipper Length", subtitle="Sample of Three Penguin Species", caption= "Data collected by Dr. Kristen Gorman")+
+  annotate("text", x=220, y=3500, label="The Gnetoos are the largest", color="purple",
+           fontface="bold", size=4.5, angle=25)
+
+p <- ggplot(data = penguins) + geom_point(mapping=aes(x=flipper_length_mm,y=body_mass_g, color = species))+
+  labs(title="Palmer Penguins: Body Mass vs. Flipper Length", subtitle="Sample of Three Penguin Species", caption= "Data collected by Dr. Kristen Gorman")
+  
+p+annotate("text", x=220, y=3500, label="The Gnetoos are the largest", color="purple",
+           fontface="bold", size=4.5, angle=25)
+```
+
+
+
+
+

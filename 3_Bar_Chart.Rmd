@@ -1,0 +1,121 @@
+---
+title: "3_Bar_Chart"
+author: "Joanne Fil"
+date: "7/22/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Practice creating different types of bar charts
+
+### View the data
+
+```{r}
+library(dplyr)
+library(ggplot2)
+head(diamonds)
+diamonds %>% count(cut)
+```
+
+### Map to the number in each category of 'cut'
+
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut))
+```
+
+### Change color of of each cut type
+
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, fill = cut))
+```
+
+### Change width
+
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, fill = cut), width = 0.3)
+```
+
+### To make columns without just counting, use 'geom_col'
+
+```{r}
+head(pressure)
+ggplot(data = pressure) +
+  geom_col(mapping = aes(x = temperature, y = pressure))
+```
+
+### Stacked bar chart
+
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, fill = clarity))
+
+```
+
+### Stacked bar chart where it takes up the entire y axis
+
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, fill = clarity), position = "fill")
+```
+
+### Stacked bar chart without space in between columns
+
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, fill = clarity), position = "fill", width = 1)
+```
+
+### Use dodge to place rectangles that have the same cut value beside each other
+
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, fill = clarity), position = "dodge")
+```
+
+### Facet - split into subplots; vertical by first value and horizontal by second value
+
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = color)) +
+  facet_grid(clarity ~ cut)
+
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = color)) +
+  facet_grid(. ~ cut)
+
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = color)) +
+  facet_grid(clarity ~ .)
+```
+
+### Facet_wrap - facet a plot on a single variable
+
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = color, fill = cut)) +
+  facet_wrap( ~ cut)
+```
+
+### Facet_wrap can let range of x, y, or both vary
+
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = color, fill = cut)) +
+  facet_wrap( ~ cut, scales = "free_x")
+
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = color, fill = cut)) +
+  facet_wrap( ~ cut, scales = "free_y")
+
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = color, fill = cut)) +
+  facet_wrap( ~ cut, scales = "free")
+```
+
+

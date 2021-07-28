@@ -1,0 +1,277 @@
+---
+title: "9_Customized_plots"
+author: "Joanne Fil"
+date: "7/27/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Practice with customizing plots
+
+### Make a boxplot
+
+```{r}
+library(ggplot2)
+library(dplyr)
+ggplot(diamonds) +
+  geom_boxplot(mapping = aes(x = cut, y = price))
+
+p <- ggplot(diamonds) +
+  geom_boxplot(mapping = aes(x = cut, y = price))
+```
+
+### Worst cut diamond is the lowest price, check with summarizing
+
+```{r}
+diamonds %>% 
+  group_by(cut) %>% 
+  summarise(median = median(price))
+```
+
+### Can zoom the y axis from 0 to 7,500
+
+```{r}
+p + ylim(0, 7500)
+```
+
+### Caution: zooming is bad for boxplots since it changes the information because it throws out some data before drawing the boxplot
+
+### To zoom without clipping change the coordinate
+
+```{r}
+p + coord_flip(ylim = c(0, 7500))
+```
+
+### If plot doesn't call the coord_ function then plot is using Cartesian coordinates
+
+```{r}
+p + coord_cartesian(ylim = c(0, 7500))
+```
+
+### Can update by overwriting
+
+```{r}
+p <- p + coord_cartesian(ylim = c(0, 7500))
+p
+```
+
+### Add title
+
+```{r}
+p + labs(title = "The title appears here")
+```
+
+### Add subtitle
+
+```{r}
+p + labs(title = "The title appears here",
+         subtitle = "The subtitle appears here, slightly smaller")
+```
+
+### Add caption
+
+```{r}
+p + labs(title = "The title appears here",
+         subtitle = "The subtitle appears here, slightly smaller",
+         caption = "Captions appear at the bottom.")
+
+p + labs(title = "Diamond prices by cut",
+         subtitle = "Fair cut diamonds fetch the highest median price. Why?",
+         caption = "Data collected by Hadley Wickham")
+```
+
+### Plot displays relationship between carat size, price, and cut
+
+```{r}
+p1 <- ggplot(data = diamonds, mapping = aes(x = carat, y = price)) +
+  geom_smooth(mapping = aes(color = cut), se = FALSE) + 
+  labs(title = "Carat size vs. Price",
+       subtitle = "Fair cut diamonds tend to be large, but they fetch the lowest prices for most carat sizes.",
+       caption = "Data by Hadley Wickham")
+```
+
+### Annotate adds a single geom to plot
+
+```{r}
+p1 + annotate("text", x = 4, y = 7500, label = "There are no cheap,\nlarge diamonds")
+```
+
+### Can use different themes
+
+```{r}
+p1 + theme_bw()
+p1 + theme_classic()
+p1 + theme_dark()
+p1 + theme_gray()
+p1 + theme_light()
+p1 + theme_linedraw()
+p1 + theme_minimal()
+p1 + theme_void()
+
+library("ggthemes")
+p1 + theme_base()
+p1 + theme_calc()
+p1 + theme_economist()
+p1 + theme_economist_white()
+p1 + theme_excel()
+p1 + theme_few()
+p1 + theme_fivethirtyeight()
+p1 + theme_foundation()
+p1 + theme_gdocs()
+p1 + theme_hc()
+p1 + theme_igray()
+p1 + theme_map()
+p1 + theme_pander()
+p1 + theme_par()
+p1 + theme_solarized()
+p1 + theme_solarized_2()
+p1 + theme_solid()
+p1 + theme_stata()
+p1 + theme_tufte()
+p1 + theme_wsj()
+```
+
+### Use scales, like greyscale
+
+```{r}
+p1 + scale_color_grey()
+```
+
+### Logscale
+
+```{r}
+p1 +
+  scale_x_log10() + 
+  scale_y_log10()
+```
+
+### Good color for color palettes for discrete variables
+
+```{r}
+p1 + scale_color_brewer()
+```
+
+### Show different palettes
+
+```{r}
+RColorBrewer::display.brewer.all()
+```
+
+### Change the color palette of the lines
+
+```{r}
+p1 + scale_color_brewer(palette = "Purples")
+
+p1 + scale_color_brewer(palette = "Spectral")
+```
+
+### What about continuous variables?
+### Use scale_color_distiller with same palettes as before
+
+```{r}
+p_cont <- ggplot(data = mpg) + 
+  geom_jitter(mapping = aes(x = displ, y = hwy, color = hwy)) +
+  theme_bw()
+
+p_cont
+
+p_cont + scale_color_distiller(palette = "Spectral")
+
+p_cont + scale_color_distiller(palette = "BrBG")
+```
+
+### Can also use viridis package for continuous variables and are color blind and black and white printer friendly
+
+```{r}
+library("viridis")
+
+p_cont + scale_color_viridis()
+```
+
+### Viridis color magma
+
+```{r}
+p_cont + scale_color_viridis(option = "A")
+```
+
+### Viridis color plasma
+
+```{r}
+p_cont + scale_color_viridis(option = "B")
+```
+
+### Viridis color inferno
+
+```{r}
+p_cont + scale_color_viridis(option = "C")
+```
+
+### Viridis color magma
+
+```{r}
+p_cont + scale_color_viridis(option = "D")
+```
+
+### Change position of legend
+
+```{r}
+p_cont + theme(legend.position = "bottom")
+
+p_cont + theme(legend.position = "top")
+
+p_cont + theme(legend.position = "left")
+
+p_cont + theme(legend.position = "right")
+```
+
+### Different way to organize the plot
+
+```{r}
+ggplot(data = mpg) + 
+  geom_jitter(mapping = aes(x = displ, y = hwy, color = hwy)) +
+  theme_bw() +
+  theme(legend.position = "bottom")
+```
+
+### Can change the labels of the legend
+
+```{r}
+p1 + scale_color_brewer(name = "Cut Grade", 
+                        labels = c("Very Bad", "Bad", "Mediocre", "Nice", "Very Nice"))
+```
+
+### If need to identify default scales and then manually add that scale to the plot
+
+```{r}
+p1 + scale_color_discrete(name = "Cut Grade", labels = c("Very Bad", "Bad", "Mediocre", "Nice", "Very Nice"))
+
+p_cont + scale_color_continuous(name = "Highway MPG") + theme(legend.position = "top")
+```
+
+### Axis labels
+
+```{r}
+p1 + scale_x_continuous(name = "Carat Size", labels = c("Zero", "One", "Two", "Three", "Four", "Five"))
+```
+
+### Example plots
+
+```{r}
+ggplot(data = diamonds, mapping = aes(x = carat, y = price)) +
+  geom_point() + 
+  geom_smooth(mapping = aes(color = cut), se = FALSE) +  
+  labs(title = "Ideal cut diamonds command the best price for every carat size",
+       subtitle = "Lines show GAM estimate of mean values for each level of cut",
+       caption = "Data provided by Hadley Wickham",
+       x = "Log Carat Size",
+       y = "Log Price Size",
+       color = "Cut Rating") +
+  scale_x_log10() +
+  scale_y_log10() +
+  scale_color_brewer(palette = "Greens") +
+  theme_light()
+```
+

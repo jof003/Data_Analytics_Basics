@@ -1,0 +1,191 @@
+---
+title: "14_Functions"
+author: "Joanne Fil"
+date: "7/27/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Practice using basic functions
+### Creating a function
+
+```{r}
+foo <- function() {
+  a <- 1
+  b <- 2
+  a + b
+}
+foo()
+
+x <- c(100, 100, 100, 100, 100, 100, 100, 100, 100, 90)
+grade <- function() { 
+  (sum(x) - min(x)) / 9
+}
+grade()
+
+```
+
+### Arguments
+
+```{r}
+foo <- function(a, b) {
+  a + b
+}
+foo(a = 1, b = 1)
+```
+
+### Purrr expressions work similarly to functions
+### Purr example
+
+```{r}
+library(tidyverse)
+vec <- c(1, 2, 3)
+map(vec, ~.x^2)
+```
+
+### Same thing in function
+
+```{r}
+sq <- function(.x) {
+  .x^2
+}
+map(vec, sq)
+```
+
+### Can use pipes with functions by replacing initial object with period
+
+```{r}
+c(1, 2, 3, 4, 5) %>% 
+  sq() %>% 
+  sum()
+
+l2_pipe <- . %>% 
+  sq() %>% 
+  sum()
+
+l2_pipe(c(1, 1, 1))
+```
+
+### Can use if else statements with or without braces, but if don't use braces make sure to highlight the whole function and run or else it will only load part of the function
+
+```{r}
+clean <- function(x) {
+  if (x == -99) NA 
+  else x
+}
+
+clean(-99)
+
+clean <- function(x) {
+  if (x == -99) {
+    NA
+  } else {
+    x <- x^2
+    x
+  }
+}
+
+clean(-20)
+```
+
+### Also use if else if
+
+```{r}
+clean <- function(x) {
+  if (x == -99) NA 
+  else if (x == ".") NA
+  else x
+}
+```
+
+### Use return to stop executing the function
+
+```{r}
+impatient_square <- function(x) {
+  return(x)
+  x^2
+}
+impatient_square(2)
+```
+
+### Can use stop to return an error with a custom error message
+
+```{r}
+immovable_square <- function(x) {
+  stop("I refuse to proceed.")
+  x^2
+}
+
+```
+
+### Or stopifnot (Note that this section is commented out since Rmarkdown would not work since this function causes an error message)
+
+```{r}
+#x <-- 1
+#stopifnot(x >= 0)
+
+#clean <- function(x) {
+#  stopifnot(!is.null(x), is.numeric(x), length(x) == 1)
+  
+#  if (x == -99) return(NA)
+#  x
+#}
+#clean(NULL)
+
+```
+
+### Different types of loops
+### Repeat using break to end the loop
+
+```{r}
+n <- 1
+repeat {
+  print(n)
+  if (n == 5) break
+  n <- n + 1
+}
+
+count <- function(x) {
+  n <- 1
+  repeat {
+    print(n)
+    if (n == x) break
+    n <- n + 1
+  }
+}
+
+count(5)
+```
+
+### Modulo function to return remainder of dividing a by b
+
+```{r}
+5 %% 5
+5 %% 4
+5 %% 3
+5 %% 2
+5 %% 1
+```
+
+### While loops run while a condition is true
+
+```{r}
+n <- 1
+while (n <= 5) {
+  print(n)
+  n <- n + 1
+}
+```
+
+### For loop doesn't require condition to run
+
+```{r}
+for (n in c(1, 2, 3, 4, 5)) {
+  print(n)
+}
+```
+
+

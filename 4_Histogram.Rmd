@@ -1,0 +1,85 @@
+---
+title: "4_Histogram"
+author: "Joanne Fil"
+date: "7/27/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Practice creating different types of histograms
+
+### Making a histogram
+
+```{r}
+library(ggplot2)
+ggplot(data = diamonds) +
+  geom_histogram(mapping = aes(x = carat))
+```
+
+### Can change bin width
+
+```{r}
+ggplot(data = diamonds) +
+  geom_histogram(mapping = aes(x = carat), binwidth = 0.5)
+```
+
+### Can change number of bins
+
+```{r}
+ggplot(data = diamonds) +
+  geom_histogram(mapping = aes(x = carat), bins = 50)
+```
+
+### Can move the bins left and right along the x axis
+
+```{r}
+ggplot(data = diamonds) +
+  geom_histogram(mapping = aes(x = carat), bins = 10, boundary = 0)
+```
+
+### Also can stack
+
+```{r}
+ggplot(data = diamonds) +
+  geom_histogram(mapping = aes(x = price, fill = cut), binwidth = 1000, boundary = 0)
+```
+
+### Frequency polygon, uses a line to display the same information as a histogram
+
+```{r}
+ggplot(data = diamonds) +
+  geom_freqpoly(mapping = aes(x = carat), binwidth = 0.25, boundary = 0)
+```
+
+### Split the frequency polygon to multiple lines
+
+```{r}
+ggplot(data = diamonds) +
+  geom_freqpoly(mapping = aes(x = price, color = cut), binwidth = 1000, boundary = 0)
+```
+
+### Density curve
+
+```{r}
+ggplot(data = diamonds) +
+  geom_density(mapping = aes(x = price, color = cut))
+```
+
+### Dotplot represents each observation with a dot and then stacks dots within bins to create the semblance of a histogram.
+
+```{r}
+ggplot(data = mpg) +
+  geom_dotplot(mapping = aes(x = displ), dotsize = 0.5, stackdir = "up", stackratio = 1.1)
+```
+
+### Can facet histograms
+
+```{r}
+ggplot(data = diamonds) +
+  geom_histogram(mapping = aes(x = price, fill = cut), binwidth = 1000, boundary = 0) +
+  facet_wrap( ~cut)
+```
+
